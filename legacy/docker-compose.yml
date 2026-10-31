@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: dras
+      POSTGRES_USER: dras
+      POSTGRES_PASSWORD: local-only
+    volumes: ["postgres:/var/lib/postgresql/data"]
+  redis:
+    image: redis:7-alpine
+  api:
+    build: .
+    env_file: .env
+    command: uvicorn dras.api:app --host 0.0.0.0 --port 8000
+    depends_on: [postgres, redis]
+  worker:
+    build: .
+    env_file: .env
+    command: celery -A dras.worker.celery_app worker --loglevel=INFO --concurrency=1
+    depends_on: [postgres, redis]
+  dashboard:
+    build: .
+    env_file: .env
+    environment:
+      DRAS_API_BASE_URL: http://api:8000
+    command: streamlit run src/dras/dashboard.py --server.address=0.0.0.0 --server.port=8501
+    ports: ["8501:8501"]
+    depends_on: [api]
+volumes:
+  postgres:
+

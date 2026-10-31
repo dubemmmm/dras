@@ -1,0 +1,19 @@
+.env
+.venv/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.pyc
+*.db
+var/
+dist/
+*.egg-info/
+
+
+# never commit: graded student work, sample dissertations, local tooling
+/data/
+/*.doc
+/*.docx
+.DS_Store
+.claude/
+.agents/

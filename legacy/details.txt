@@ -1,0 +1,1089 @@
+# Project Specification: AI-Powered Thesis and Dissertation Assessment System
+
+**Project Name:** Dissertation Review Automation System (DRAS)
+
+**Project Type:** AI-powered academic document analysis, evaluation, and reporting application
+
+**Primary Users:** Dissertation assessors, academic supervisors, postgraduate examination committees, and authorized research reviewers.
+
+**Initial Assessment Standard:** West African Postgraduate College of Pharmacists (WAPCP) Dissertation Assessment Report, 2026.
+
+**Primary Goal:** Automate the analysis of dissertations and the preparation of structured, evidence-backed academic assessment reports while preserving human oversight of final academic judgments.
+
+---
+
+## 1. Project Overview
+
+The Dissertation Review Automation System (DRAS) is an AI-powered application designed to streamline the process of reviewing postgraduate theses and dissertations.
+
+Traditionally, a dissertation assessor must manually read an entire dissertation, examine each section against established academic criteria, identify methodological or reporting weaknesses, prepare detailed comments, complete an assessment checklist, and assign scores based on institutional guidelines.
+
+This process is time-consuming, particularly when reviewing multiple lengthy dissertations.
+
+The proposed system will automate substantial portions of this workflow by combining large language models, structured document extraction, deterministic validation, specialized review instructions, and automated Word document generation.
+
+Users will upload a dissertation in PDF or DOCX format. The application will extract the document's content, identify its constituent sections, evaluate each section according to the official assessment criteria, identify findings supported by the dissertation, and prepare appropriately worded reviewer comments.
+
+It will then populate the institutional assessment template, producing a completed report ready for an academic assessor to review and approve.
+
+The application is intended to function as an **AI-assisted academic assessment system**, not an autonomous academic examiner. It will recommend comments, checklist responses, and scores while requiring human confirmation for judgments such as originality, publishability, and final academic adequacy.
+
+The system must be reusable across multiple dissertations without requiring the user to rewrite prompts or manually restructure documents for each assessment.
+
+## 2. Project Objectives
+
+The system should accomplish the following:
+
+1. Accept complete postgraduate dissertations in PDF or Word format.
+2. Extract dissertation content while preserving chapter structures, headings, tables, figures, page references, and relevant metadata.
+3. Automatically identify dissertation components, including the Abstract, Introduction, Literature Review, Methods, Results, Discussion, Conclusion, References, and Appendices.
+4. Evaluate every relevant component against institution-specific assessment criteria.
+5. Perform an internal Literature Review evaluation for confidential scoring without generating separate student-facing Literature Review comments.
+6. Identify research weaknesses, missing information, inconsistencies, unclear explanations, and areas requiring improvement.
+7. Support substantive criticisms with verifiable evidence extracted from the dissertation.
+8. Generate natural, academically appropriate, constructive reviewer comments.
+9. Complete all 13 items in the institutional assessment checklist, subject to verification and appropriate human attestation.
+10. Propose assessment scores across all eight categories using an assessor-approved scoring rubric.
+11. Populate the official Word assessment template without altering its essential structure.
+12. Separate student-facing feedback from confidential assessment information.
+13. Allow a human assessor to review and edit comments, checklist decisions, and scores before finalization.
+14. Export completed documents in Word and PDF formats.
+15. Support repeatable assessments, revision tracking, and future expansion to other academic institutions.
+
+## 3. Expected User Workflow
+
+### Stage 1: Dissertation Upload
+
+The user opens the application and initiates a new assessment.
+
+The application provides a document-upload interface that accepts PDF and DOCX files.
+
+Users may also enter or verify the following details:
+
+- Candidate name
+- Registration number
+- Dissertation title
+- Supervisor name
+- Assessor name
+- Assessment date
+
+Where these details appear in the dissertation, the system should automatically extract them.
+
+The application must not invent missing metadata. Missing or ambiguous values should remain unconfirmed until the assessor provides them.
+
+The user then initiates the review process.
+
+### Stage 2: Document Extraction and Structural Analysis
+
+After receiving the dissertation, the application extracts its contents and converts them into a structured internal representation.
+
+The extraction process must:
+
+- Identify the title page and preliminary pages.
+- Detect the table of contents and chapter headings.
+- Identify the major dissertation sections and their subsections.
+- Extract paragraphs, relevant tables, figure descriptions, references, and appendix information.
+- Preserve original page references wherever possible.
+- Distinguish actual document content from page headers, footers, and repeated formatting elements.
+- Detect missing or ambiguously identified sections.
+- Flag pages or figures that require visual inspection.
+
+The system should not rely solely on keyword searches for chapter identification. Academic dissertations use different naming conventions, so section identification should combine heading detection, document structure, and semantic classification.
+
+For example, a chapter titled "Materials and Methods" should be identified as the Methods section.
+
+The original dissertation must remain unchanged.
+
+### Stage 3: Creation of a Structured Dissertation Representation
+
+The extracted content will be organized into an internal data model.
+
+The representation should contain:
+
+- Dissertation metadata
+- Document section hierarchy
+- Section content
+- Original page locations
+- Table and figure information
+- Research objectives
+- Research questions or hypotheses, where applicable
+- Methodological details
+- Key reported findings
+- Reference entries
+- Appendix information
+- Extraction warnings
+
+This structured representation becomes the source of evidence for all subsequent assessments.
+
+It also allows the system to examine relationships between different dissertation sections rather than treating each chapter as an independent document.
+
+## 4. AI Assessment Engine
+
+The core of the application will be a specialized AI review engine.
+
+Rather than prompting a language model to review the entire dissertation in a single request, the system will employ a structured, multi-stage evaluation process.
+
+Each dissertation section will be evaluated against its own assessment criteria.
+
+The engine will consist of three primary capabilities.
+
+### 4.1 Structural and Compliance Evaluation
+
+This component evaluates objective or reasonably machine-verifiable requirements.
+
+Examples include:
+
+- Whether expected dissertation sections are present.
+- Whether the Abstract exceeds the one-page limit specified by the assessment form.
+- Whether the required Abstract subheadings are present.
+- Whether tables and figures are numbered consistently.
+- Whether references are alphabetically arranged.
+- Whether in-text citations have corresponding reference-list entries.
+- Whether the expected chapter structure is present.
+- Whether relevant appendices are attached.
+- Whether evidence of ethical approval is included.
+- Whether formatting inconsistencies are detectable.
+
+These checks should use deterministic programming whenever possible.
+
+A language model may assist in interpreting ambiguous structure, but it should not replace reliable code-based validation.
+
+The system must distinguish between an absent item and one that could not be verified.
+
+### 4.2 Academic Content Evaluation
+
+This component performs deeper academic analysis using an LLM.
+
+It evaluates whether the research is coherent, appropriately explained, methodologically justified, and supported by the evidence presented.
+
+For each section, the model receives:
+
+- The relevant dissertation content.
+- The applicable institutional assessment criteria.
+- Relevant context extracted from other sections.
+- Explicit instructions about acceptable reviewer language.
+- Requirements to identify supporting evidence.
+- A structured output schema.
+
+The model must not generate criticism merely because a rubric contains a particular item. It should determine whether the issue genuinely applies to the research.
+
+The evaluation should also adapt to the research design. For example, a qualitative study should not automatically be criticized for lacking inferential statistical tests.
+
+### 4.3 Cross-Section Consistency Analysis
+
+The application must identify inconsistencies between dissertation sections.
+
+Important comparisons include:
+
+**Abstract versus full dissertation:** Verify that the methods, numerical findings, objectives, and conclusions reported in the Abstract agree with the main text.
+
+**Objectives versus Methods:** Determine whether the methods described are appropriate for addressing the stated research objectives.
+
+**Methods versus Results:** Check that the reported analyses are consistent with the methods and statistical procedures described.
+
+**Results versus Discussion:** Determine whether the Discussion accurately interprets the presented findings rather than contradicting or merely repeating them.
+
+**Objectives versus Conclusion:** Determine whether the Conclusion addresses the study's objectives without making unsupported claims.
+
+**In-text citations versus References:** Identify missing or mismatched bibliographic entries.
+
+This stage is particularly important because a chapter may appear acceptable in isolation while conflicting with other sections of the dissertation.
+
+## 5. Detailed Section-Specific Assessment Requirements
+
+### 5.1 Abstract Assessment
+
+The system must examine whether the Abstract provides a concise and accurate representation of the complete study.
+
+It should evaluate:
+
+- Whether the Abstract is structured into Objectives, Methods, Results, and Conclusion.
+- Whether the research problem or objective is clearly presented.
+- Whether the study design and essential methods are adequately summarized.
+- Whether the most important results are included.
+- Whether the conclusions are supported by the actual findings.
+- Whether the Abstract is consistent with the dissertation.
+- Whether it complies with the one-page requirement.
+
+The output should identify missing information, inaccuracies, unnecessary details, and opportunities for greater clarity.
+
+### 5.2 Introduction Assessment
+
+The system must evaluate the clarity, logical organization, and academic justification of the study.
+
+It should examine:
+
+- Background and context of the research problem.
+- Clarity of the problem being investigated.
+- Rationale or justification for conducting the study.
+- Statement of general and specific objectives.
+- Clarity and suitability of research questions or hypotheses, where relevant.
+- Logical connection between the research problem and objectives.
+- Relevance of the study to its stated field.
+
+Although the institution's Introduction criteria mention relevant literature, detailed Literature Review comments will be excluded under the agreed project configuration.
+
+The system may still use literature-related context to evaluate the study's justification.
+
+### 5.3 Methods Assessment
+
+The Methods section requires particularly detailed evaluation.
+
+The system should examine:
+
+- Study design and justification.
+- Study setting.
+- Study population and eligibility criteria.
+- Sampling method and sample-size determination, where applicable.
+- Data collection methods.
+- Data collection instruments.
+- Instrument validation or reliability considerations, where applicable.
+- Data collection procedures.
+- Data management and quality-control measures.
+- Descriptive and inferential statistical methods, where applicable.
+- Statistical software or other analytical tools used.
+- Ethical considerations.
+- Reproducibility and adequacy of methodological detail.
+
+The system must identify methodological omissions, unclear procedures, unexplained choices, and potential inconsistencies with the study objectives.
+
+Comments must be tailored to the actual research methodology.
+
+The AI should not assume that every study requires the same sampling technique, sample-size formula, statistical tests, or data collection procedures.
+
+### 5.4 Results Assessment
+
+The Results assessment should evaluate how clearly and credibly the findings are reported.
+
+It should examine:
+
+- Alignment of results with research objectives.
+- Logical organization of findings.
+- Clarity and completeness of data presentation.
+- Appropriate use of tables and figures.
+- Numerical consistency between text, tables, and figures.
+- Sample-size and denominator consistency.
+- Reporting of statistical results where appropriate.
+- Unnecessary repetition of information.
+- Unsupported interpretation appearing within the Results section.
+- Missing findings relevant to the research objectives.
+
+Where possible, deterministic checks should verify calculations, percentages, totals, and other numerical relationships.
+
+The AI must distinguish between verified inconsistencies and suspected problems requiring further investigation.
+
+### 5.5 Discussion Assessment
+
+The Discussion assessment should determine whether the author demonstrates an appropriate understanding of the findings and their implications.
+
+It should examine:
+
+- Interpretation of major findings.
+- Comparison with relevant previous studies.
+- Explanations for similarities and differences.
+- Scientific or professional implications.
+- Relationship between findings and research objectives.
+- Acknowledgment of study limitations.
+- Unanswered questions and directions for future research.
+- Avoidance of unsupported conclusions.
+- Avoidance of simply repeating the Results section.
+
+The system should identify areas where the author reports a finding but does not adequately explain its meaning.
+
+It should also identify claims that extend beyond what the study design or evidence can establish.
+
+### 5.6 Conclusion Assessment
+
+The Conclusion must be evaluated against the actual study objectives and results.
+
+The application should determine whether:
+
+- The Conclusion addresses the stated research objectives.
+- Major conclusions follow logically from the findings.
+- Claims are appropriately qualified.
+- Recommendations are supported by the study.
+- The author introduces unsupported assertions.
+- The Conclusion is concise and consistent with the dissertation.
+
+The AI should flag recommendations based on personal or professional aspirations rather than evidence from the study, in accordance with the supplied assessment form.
+
+### 5.7 References Assessment
+
+The system should assess the dissertation's compliance with Harvard referencing requirements.
+
+Checks should include:
+
+- Author–date in-text citation format.
+- Alphabetical organization of the reference list.
+- Consistent formatting of reference entries.
+- Missing bibliographic information.
+- In-text citations without corresponding references.
+- Reference entries not cited in the text.
+- Apparent inconsistencies in author names or publication years.
+
+The initial implementation should focus on internal consistency and identifiable formatting issues.
+
+Verification that a cited publication actually exists would require an additional bibliographic lookup capability and should not be claimed unless performed.
+
+### 5.8 Appendix Assessment
+
+The application should examine whether relevant supporting documents are present.
+
+These may include:
+
+- Questionnaires.
+- Interview guides.
+- Data collection instruments.
+- Evidence of ethical approval.
+- Other supporting materials identified as necessary by the dissertation.
+
+The system should check whether instruments referenced in the Methods section are included in the Appendices.
+
+It must distinguish between verifying that an ethics letter appears in the document and confirming that the approval is authentic or adequate, which may require human examination.
+
+### 5.9 General Presentation Assessment
+
+The application must evaluate the overall academic presentation of the dissertation.
+
+It should consider:
+
+- Presence and organization of the expected five chapters.
+- Consistent chapter and section numbering.
+- Logical organization.
+- Language clarity.
+- Grammar and editorial issues.
+- Consistent formatting.
+- Tables, figures, captions, and numbering.
+- Appropriate academic writing.
+- Readability and professionalism.
+
+Where formatting cannot be reliably assessed from extracted text, the system should inspect the rendered pages or flag the issue for manual review.
+
+## 6. Special Handling of the Literature Review
+
+The Literature Review will follow a fixed rule.
+
+**The AI must evaluate the Literature Review internally but must not produce a separate detailed Literature Review comment in the student-facing report.**
+
+The Literature Review assessment will focus on:
+
+- Relevance of the literature to the research problem.
+- Adequacy of the literature supporting the study.
+- Organization and logical progression.
+- Appropriate comparison and synthesis of previous studies.
+- Identification of research gaps.
+- Critical analysis rather than simple description.
+- Alignment with the study objectives.
+
+The system will use this assessment to propose a confidential score out of 10.
+
+Its internal evaluation and supporting evidence will be available to the assessor but excluded from the student-facing detailed comments.
+
+This rule will be established as part of the default reviewing skill and will not require a checkbox each time a dissertation is uploaded.
+
+## 7. Evidence-Backed Findings and Reviewer Comments
+
+One of the most important requirements is that the system must not produce generic or fabricated academic criticism.
+
+Every substantive finding must have an identifiable basis in the dissertation.
+
+The system should separate two outputs:
+
+**Internal findings:** Structured records describing the issue, supporting evidence, severity, and proposed action.
+
+**Reviewer comments:** Professionally written text intended for the completed assessment report.
+
+Each internal finding should contain:
+
+- Section name.
+- Issue category.
+- Description of the finding.
+- Supporting text or document location.
+- Page reference where available.
+- Why the issue matters.
+- Recommended improvement.
+- Severity classification.
+- Evidence-verification status.
+- Confidence or uncertainty notes.
+
+Suggested severity classifications are:
+
+- Major revision: A substantive issue affecting interpretation, methodological clarity, validity, or an important assessment requirement.
+- Minor revision: An issue of clarity, presentation, consistency, or limited reporting detail.
+- Editorial correction: A language, formatting, numbering, or typographical issue.
+- Verification required: A suspected issue that cannot be confirmed from the available evidence.
+
+The system must not treat an unverified suspicion as an established deficiency.
+
+### Reviewer Writing Standards
+
+The generated comments should resemble the writing of a professional academic dissertation assessor.
+
+They must be:
+
+- Natural and fluent.
+- Professional and constructive.
+- Specific to the dissertation.
+- Academically grounded.
+- Clear about what requires improvement.
+- Appropriately critical without being unnecessarily harsh.
+- Free of repetitive, generic AI-style language.
+- Consistent in tone across all sections.
+
+The system should avoid fabricated praise, exaggerated criticisms, vague recommendations, and repetitive phrases.
+
+It should identify both strengths and weaknesses where supported by the document.
+
+For example, instead of stating, "The methodology needs more clarification," the system should describe which methodological detail is insufficiently explained and what additional information would improve it.
+
+Comments should generally be written in well-structured prose suitable for direct insertion into the assessment form.
+
+The application should support concise and detailed comment lengths, with a professionally balanced default.
+
+## 8. Assessment Checklist Automation
+
+The official institutional template contains 13 assessment questions.
+
+The application must process every item and prepare the relevant answer.
+
+Each question must have one of three possible responses:
+
+- Yes
+- No
+- Cannot answer
+
+The response must be justified using extracted evidence or an explicit assessor confirmation.
+
+The system must interpret each question independently rather than assuming that every "Yes" represents a favorable assessment.
+
+For example, the question asking whether Results were repeated under Discussion has a different interpretation from the question asking whether the Conclusion is based on the study objectives.
+
+The checklist includes questions relating to the topic, table of contents, supervisor certification, Abstract, Introduction, Methods, Results, Discussion, Conclusion, references, ethical approval, originality, and overall adequacy for the FPCPharm award.
+
+Some answers can be generated from document analysis.
+
+Other answers require human confirmation.
+
+For example, a machine can determine whether the Introduction was processed during the review, but it cannot truthfully certify that the human assessor personally read it. Such attestation questions should remain pending until confirmed.
+
+Likewise, the AI cannot conclusively establish originality or final academic adequacy from document analysis alone.
+
+The application should therefore provide proposed responses and explanations while making human confirmation mandatory for attestation-based or high-stakes judgments.
+
+## 9. Confidential Scoring System
+
+The confidential scoring engine must implement the exact assessment categories and maximum marks provided in the institutional template.
+
+| Assessment Criterion | Maximum Score |
+|---|---:|
+| Literature Review | 10 |
+| Study Objectives | 5 |
+| Methods | 10 |
+| Results | 10 |
+| Discussion | 10 |
+| Conclusion | 5 |
+| References | 5 |
+| Originality | 5 |
+| **Total** | **60** |
+
+The AI should evaluate each criterion and propose a numerical score within the permitted range.
+
+Each score should be supported by a short internal justification.
+
+Because the supplied form specifies maximum marks but does not define detailed scoring bands, the system must use an explicit, assessor-approved scoring guide.
+
+The application should not invent institutional pass thresholds or claim that an AI-generated scoring scale is an official WAPCP standard.
+
+The Originality score must be treated as provisional unless sufficient evidence and appropriate assessor review are available.
+
+If a criterion cannot be assessed with adequate evidence, the system should mark the score as pending rather than assign an arbitrary number.
+
+The total score should be calculated automatically when all applicable scores are confirmed.
+
+All confidential scoring information must remain separate from student-facing feedback.
+
+The Oral Defence line appearing in the institutional form should remain unchanged unless an authorized workflow specifically supplies its result.
+
+## 10. Publishability Assessment
+
+The official report asks whether the dissertation is publishable.
+
+The AI should produce an internal recommendation based on factors such as:
+
+- Research contribution.
+- Methodological adequacy.
+- Clarity of results.
+- Quality of interpretation.
+- Scientific coherence.
+- Reporting completeness.
+- Important unresolved limitations.
+
+The recommendation may be:
+
+- Potentially publishable.
+- Potentially publishable after substantial revisions.
+- Not presently suitable for publication.
+- Insufficient evidence to determine.
+
+These are internal decision-support categories, not replacements for the institution's Yes/No field.
+
+The final Yes/No selection must be approved by the assessor.
+
+The system must avoid interpreting publishability as equivalent to the dissertation's adequacy for the academic award; these are distinct judgments.
+
+## 11. Automated Word Template Completion
+
+A major deliverable of the project is the ability to fill the original institutional assessment document.
+
+The application must preserve the assessment form's required headings, categories, checklist wording, and scoring structure.
+
+The original legacy Word template should be converted into a reusable DOCX template with identifiable insertion locations.
+
+### Output A: Assessment Checklist
+
+The system will populate:
+
+- Candidate name.
+- Registration number.
+- Proposed checklist answers.
+- Supporting comments.
+- General comments.
+- Assessor information where provided and authorized.
+
+Attestation-based answers must remain clearly unconfirmed until approved.
+
+### Output B: Detailed Assessment Report
+
+The system will populate the detailed report with:
+
+1. Comments on Abstract.
+2. Comments on Introduction.
+3. Comments on Methods.
+4. Comments on Results.
+5. Comments on Discussion.
+6. Comments on Conclusion.
+7. Comments on References.
+8. Comments on Appendix.
+9. Comments on General Presentation.
+10. Assessor-approved publishability answer.
+11. Overall general comments.
+
+There will be no independent student-facing Literature Review comments section.
+
+Comments should be inserted beneath the appropriate headings.
+
+The document must expand to accommodate substantive comments without truncating text.
+
+The completed report should remain professional, readable, and consistent with the institutional form.
+
+### Output C: Confidential Scoring Report
+
+A separate document must contain:
+
+- Candidate details.
+- Proposed and approved scores.
+- The eight institutional scoring categories.
+- Total score.
+- Assessor information.
+- Authorized signature and date fields.
+
+The confidential page must never be included in a student-facing file.
+
+### Output D: Internal Evidence Report
+
+In addition to the official forms, the application should generate an internal evidence file.
+
+This should record:
+
+- All findings.
+- Supporting dissertation excerpts.
+- Relevant page numbers.
+- Proposed comments.
+- Reviewer edits.
+- Scores and their justifications.
+- Unverified items.
+- Validation results.
+
+This file is for the assessor and the system's audit trail, not the student.
+
+## 12. Human Review and Approval Interface
+
+Although the AI performs the initial review, the assessor must remain in control.
+
+The application should display the proposed findings and comments section by section.
+
+For each section, the assessor should be able to:
+
+- Read the generated comment.
+- Inspect supporting evidence.
+- Navigate to the relevant dissertation page.
+- Edit the wording.
+- Accept or reject individual findings.
+- Request a targeted reassessment.
+- Adjust checklist responses.
+- Adjust proposed scores.
+- Record final approval.
+
+The application should preserve the difference between AI-generated recommendations and assessor-approved decisions.
+
+Once approved, the final Word and PDF documents can be generated.
+
+The system should not insert fabricated signatures or automatically certify an assessment on behalf of the assessor.
+
+## 13. Technical Architecture
+
+The recommended initial architecture is a lightweight Python-based application with a modular AI review pipeline.
+
+### 13.1 Frontend
+
+**Recommended initial framework:** Streamlit.
+
+The frontend should provide:
+
+- Dissertation upload.
+- Candidate metadata confirmation.
+- Assessment initiation.
+- Review progress display.
+- Section-by-section findings.
+- Evidence inspection.
+- Comment editing.
+- Scoring interface.
+- Final report generation.
+- Downloadable outputs.
+
+Streamlit is recommended for the initial version because it allows rapid development of a functional assessment interface using Python.
+
+A React or Next.js frontend can be introduced later if the application requires more sophisticated document viewing or multiuser access.
+
+### 13.2 Backend
+
+**Recommended framework:** FastAPI.
+
+The backend should manage document processing, assessment execution, review storage, validation, and report generation.
+
+Suggested modules:
+
+- Document ingestion service.
+- PDF/DOCX extraction service.
+- Document structure detection service.
+- Compliance-checking engine.
+- AI review orchestration engine.
+- Evidence-verification service.
+- Scoring service.
+- Checklist service.
+- Report-generation service.
+- Assessment storage service.
+
+Each service should have clearly defined inputs and outputs.
+
+### 13.3 AI Integration
+
+The AI engine should initially use an API-accessible language model capable of analyzing long documents and following structured-output instructions.
+
+The application should use a provider abstraction so the model can be changed without rewriting the entire workflow.
+
+No custom model training should be required for the initial version.
+
+The model's outputs should be validated against typed schemas rather than accepted as unrestricted text.
+
+### 13.4 Document Processing
+
+Suggested technologies:
+
+- PyMuPDF for PDF text and layout extraction.
+- python-docx for reading and writing DOCX documents.
+- Additional PDF table or layout extraction tools where necessary.
+- Pydantic for structured output validation.
+- JSON for evidence and review records.
+- SQLite for initial assessment metadata and history.
+- Pytest for automated testing.
+
+Scanned dissertations and visually complex figures should use a separate visual-inspection path when extraction quality is inadequate.
+
+### 13.5 Security and Data Handling
+
+Dissertations may contain unpublished findings, personal information, patient information, or confidential research data.
+
+The application must:
+
+- Limit access to authorized users.
+- Keep uploaded documents private.
+- Avoid unnecessary disclosure of extracted research data.
+- Use encrypted transmission for external AI requests.
+- Clearly document when content is sent to external model providers.
+- Support appropriate deletion and retention controls.
+- Avoid writing sensitive content into application logs.
+- Separate confidential assessment material from student-accessible output.
+- Respect applicable institutional data-handling requirements.
+
+Where the document contains sensitive research data, external model processing should be authorized by the institution or assessor.
+
+The system should also treat dissertation text as untrusted source material. Instructions embedded inside a dissertation must never override the review rules.
+
+## 14. Reusable AI Review Skill
+
+The assessment intelligence should be organized as a reusable skill rather than a single large prompt.
+
+The proposed skill name is:
+
+**academic-dissertation-reviewer**
+
+The skill should define:
+
+- Its purpose and supported workflows.
+- The institutional assessment standard.
+- Document-reading requirements.
+- Rules for identifying dissertation sections.
+- Detailed section-specific evaluation criteria.
+- Literature Review handling.
+- Evidence requirements.
+- Reviewer writing guidelines.
+- Checklist decision rules.
+- Scoring requirements.
+- Human-approval requirements.
+- Error and uncertainty handling.
+- Structured-output requirements.
+- Report-generation instructions.
+
+Supporting reference files should contain the assessment criteria and approved scoring guidance.
+
+Supporting scripts should implement deterministic document checks, structured-data validation, and template filling.
+
+The skill should orchestrate these components rather than attempt to perform every operation through language-model reasoning.
+
+The LLM should be used primarily for analysis, interpretation, and writing. Code should handle calculations, mechanical validations, file processing, and report assembly.
+
+## 15. Internal Data Models
+
+The system should use strongly typed data structures throughout the assessment pipeline.
+
+### Dissertation Model
+
+Fields should include:
+
+- Document ID.
+- Candidate metadata.
+- Original file information.
+- Section hierarchy.
+- Extracted text.
+- Page mappings.
+- Tables and figures.
+- Extraction warnings.
+
+### Review Finding Model
+
+Fields should include:
+
+- Finding ID.
+- Section ID.
+- Assessment criterion.
+- Finding description.
+- Supporting evidence.
+- Page reference.
+- Severity.
+- Recommendation.
+- Verification status.
+- Human review status.
+
+### Section Review Model
+
+Fields should include:
+
+- Section name.
+- Applicable criteria.
+- Strengths.
+- Weaknesses.
+- Individual findings.
+- Final reviewer comment.
+- Review completeness status.
+- Assessor edits.
+- Approval status.
+
+### Checklist Response Model
+
+Fields should include:
+
+- Checklist item number.
+- Original question.
+- Proposed answer.
+- Justification.
+- Evidence references.
+- Human confirmation requirement.
+- Approved answer.
+
+### Score Model
+
+Fields should include:
+
+- Assessment category.
+- Maximum score.
+- Proposed score.
+- Scoring justification.
+- Assessment confidence.
+- Approved score.
+- Approval status.
+
+### Final Assessment Model
+
+This model should combine the complete review into one validated representation before the Word documents are generated.
+
+The final documents must be populated from this structured data, not assembled directly from unvalidated model responses.
+
+## 16. Assessment Quality Assurance
+
+The system must include a dedicated validation stage after AI review.
+
+This stage should verify:
+
+- Every required section has been evaluated.
+- All 13 checklist questions have a response or an explicit pending status.
+- All substantive criticisms have supporting evidence.
+- Dissertation page references are valid.
+- Reviewer comments do not contradict extracted findings.
+- Comments are assigned to the correct sections.
+- Numerical findings are consistent with source material where verifiable.
+- The Literature Review is excluded from detailed student-facing comments.
+- All confidential scoring criteria are represented.
+- No score exceeds its permitted maximum.
+- The total score is calculated correctly.
+- Missing evidence is not presented as proof that a requirement was violated.
+- No confidential scoring information appears in student-facing output.
+- The Word template is populated correctly.
+- No text is truncated.
+
+A second AI verification pass may be used to examine the academic consistency of the first review.
+
+However, this second pass must use the source evidence and should not merely endorse the first model's conclusions.
+
+The system should support targeted retries when a specific section fails validation instead of repeating the entire assessment.
+
+## 17. Testing and Evaluation Strategy
+
+Development should use a collection of representative dissertations and, where available, previously completed assessor reports.
+
+Testing should evaluate both technical correctness and the academic usefulness of the generated feedback.
+
+### Technical Tests
+
+Examples:
+
+- Correct identification of dissertation sections.
+- Accurate extraction of candidate details.
+- Correct page mapping.
+- Correct checklist item mapping.
+- Accurate scoring calculations.
+- Reliable template population.
+- Successful DOCX and PDF export.
+- Confidential-output separation.
+- Handling of missing sections.
+- Handling of malformed or scanned documents.
+- Rejection of unsupported model outputs.
+
+### Academic Quality Tests
+
+Human assessors should evaluate:
+
+- Accuracy of identified weaknesses.
+- Number of valid important issues detected.
+- Frequency of unsupported criticisms.
+- Appropriateness of proposed recommendations.
+- Naturalness of reviewer writing.
+- Consistency between assessments.
+- Correct application of institutional criteria.
+- Usefulness of the report for dissertation improvement.
+
+Where previous human reviews are available, the system's findings can be compared against those reviews.
+
+The objective is not to reproduce every assessor's wording. It is to identify meaningful academic concerns reliably and make the review process faster.
+
+### Suggested Success Metrics
+
+The project should track:
+
+- Percentage of required sections correctly identified.
+- Percentage of factual criticisms supported by evidence.
+- Percentage of checklist answers requiring correction.
+- Percentage of proposed scores changed by assessors.
+- Percentage of generated comments accepted without major rewriting.
+- Report-generation error rate.
+- Confidentiality validation failures.
+- Average assessor time per completed dissertation.
+- Reduction in review time compared with the existing manual process.
+
+Targets should be established from baseline testing rather than assumed in advance.
+
+## 18. Error Handling and Uncertainty
+
+The application must handle incomplete or unusual dissertations gracefully.
+
+Examples include:
+
+- Missing Abstract.
+- Unrecognizable chapter structure.
+- Missing Results section.
+- Scanned pages that cannot be reliably read.
+- Tables that cannot be extracted accurately.
+- Missing Appendix.
+- Unclear ethical approval documentation.
+- Conflicting sample-size information.
+- Missing candidate metadata.
+- Ambiguous reference entries.
+- Unavailable evidence for originality.
+
+The system should never fill these gaps by inventing facts.
+
+Instead, it should record the missing information, describe the resulting assessment limitation, and request human verification when necessary.
+
+A report may be generated with clearly indicated pending decisions, but it should not be represented as a finalized assessment until the required approvals are complete.
+
+## 19. Implementation Roadmap
+
+### Phase 1 — Build the Document Understanding Pipeline
+
+Implement dissertation upload, extraction, section identification, and page mapping.
+
+Deliverables:
+
+- Functional PDF/DOCX reader.
+- Structured dissertation representation.
+- Section detection logic.
+- Evidence-location support.
+- Extraction tests.
+
+**Completion criterion:** The application can reliably extract and organize the contents of representative dissertations.
+
+### Phase 2 — Build the Academic Review Skill
+
+Implement the specialized assessment skill and section-specific review logic.
+
+Deliverables:
+
+- Institutional review criteria.
+- Reusable skill instructions.
+- Structured reviewer findings.
+- Section-by-section evaluation.
+- Cross-section analysis.
+- Evidence-backed comments.
+- Internal Literature Review evaluation.
+
+**Completion criterion:** Given a dissertation, the system produces a complete structured review that an assessor can verify against the source.
+
+### Phase 3 — Implement Checklist and Scoring
+
+Build the institutional checklist and scoring engine.
+
+Deliverables:
+
+- All 13 assessment questions.
+- Question-specific decision rules.
+- Human-attestation handling.
+- Eight-category confidential scoring.
+- Assessor-approved scoring guidance.
+- Publishability recommendation.
+- Score validation.
+
+**Completion criterion:** The system generates consistent, justifiable proposed answers and scores without making unsupported final judgments.
+
+### Phase 4 — Implement Automated Report Generation
+
+Convert the original Word assessment form into a reliable reusable template.
+
+Deliverables:
+
+- Assessment checklist template.
+- Detailed assessment template.
+- Confidential scoring template.
+- Automated document population.
+- Word and PDF export.
+- Formatting and confidentiality validation.
+
+**Completion criterion:** The application produces correctly formatted assessment documents using actual reviewed dissertation content.
+
+### Phase 5 — Build Human Review Interface
+
+Create the reviewer dashboard.
+
+Deliverables:
+
+- Uploaded dissertation viewer.
+- Section navigation.
+- Evidence inspection.
+- Editable reviewer comments.
+- Checklist approval.
+- Scoring approval.
+- Finalization controls.
+- Assessment history.
+
+**Completion criterion:** A reviewer can complete an assessment from upload to final approved report without manually transferring comments between documents.
+
+### Phase 6 — Evaluate and Refine
+
+Test the system using representative dissertations and compare its output with professional academic assessments.
+
+Focus on:
+
+- Academic accuracy.
+- Detection of important omissions.
+- Evidence reliability.
+- Reviewer writing quality.
+- Score consistency.
+- False-positive reduction.
+- Document formatting.
+- Processing efficiency.
+
+The final review skill and scoring guidance should be refined using assessor feedback.
+
+## 20. Initial MVP Scope
+
+The first working version should prioritize the central workflow rather than attempting to implement every advanced feature.
+
+**The MVP must:**
+
+1. Accept one dissertation in PDF or DOCX format.
+2. Extract and organize the dissertation.
+3. Apply the WAPCP assessment criteria.
+4. Evaluate the Literature Review internally for scoring only.
+5. Generate evidence-backed findings for the other detailed assessment areas.
+6. Produce professional reviewer comments.
+7. Prepare the 13-question checklist.
+8. Propose confidential scores across the eight categories.
+9. Validate the generated assessment.
+10. Allow the assessor to review and edit the results.
+11. Populate the official Word assessment template.
+12. Export separate non-confidential and confidential documents.
+
+The MVP does not require a custom-trained language model, complex multi-agent infrastructure, cloud deployment, or integration with university management systems.
+
+It should be designed so these capabilities can be added later without rewriting the core assessment engine.
+
+## 21. Future Enhancements
+
+After the initial system is accurate and reliable, possible enhancements include:
+
+**Multi-institution support:** Allow different institutions to upload their own rubrics and assessment templates.
+
+**Dissertation comparison:** Compare a revised dissertation with an earlier version and determine which assessor comments were addressed.
+
+**Research-specific reviewers:** Introduce optional specialized assessment modules for qualitative, quantitative, experimental, clinical, or mixed-methods research.
+
+**Literature verification:** Connect to authorized scholarly databases or bibliographic services to verify references.
+
+**Revision tracking:** Record reviewer feedback, candidate responses, and unresolved issues across multiple submissions.
+
+**Assessment analytics:** Track common dissertation weaknesses, assessment completion times, and review consistency.
+
+**Institutional workflow integration:** Support secure, role-based submission and review processes for academic departments.
+
+These features should remain outside the initial MVP unless the core review process demonstrates sufficient reliability.
+
+## 22. Final Expected Outcome
+
+The completed Dissertation Review Automation System should allow an authorized assessor to upload a postgraduate dissertation and obtain a comprehensive preliminary academic assessment without manually preparing every comment or transferring information into the institution's official forms.
+
+The system should evaluate the dissertation against the established criteria, identify meaningful strengths and weaknesses, produce evidence-supported comments, propose checklist responses and confidential scores, and generate correctly formatted assessment documents.
+
+The Literature Review must be assessed internally for scoring while remaining excluded from the detailed student-facing section comments.
+
+The system's output should be sufficiently specific, constructive, and academically grounded to substantially reduce the assessor's workload.
+
+**The ultimate measure of success is not simply whether the application can generate an assessment report, but whether it consistently produces a reliable, evidence-backed draft that a professional academic assessor can verify, improve, and approve with significantly less manual effort.**

@@ -1,0 +1,74 @@
+services:
+  - type: web
+    name: dras-dashboard
+    runtime: docker
+    dockerCommand: streamlit run src/dras/dashboard.py --server.address=0.0.0.0 --server.port=$PORT
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: DRAS_ENV
+        value: production
+      - key: DRAS_API_BASE_URL
+        fromService: {type: pserv, name: dras-api, property: hostport}
+      - key: DRAS_SERVICE_TOKEN
+        fromService: {type: pserv, name: dras-api, envVarKey: DRAS_SERVICE_TOKEN}
+      - key: DRAS_ASSESSOR_EMAILS
+        sync: false
+  - type: pserv
+    name: dras-api
+    runtime: docker
+    dockerCommand: uv run alembic upgrade head && uvicorn dras.api:app --host 0.0.0.0 --port=$PORT
+    healthCheckPath: /health/ready
+    envVars:
+      - key: DRAS_ENV
+        value: production
+      - key: DRAS_DATABASE_URL
+        fromDatabase: {name: dras-postgres, property: connectionString}
+      - key: DRAS_REDIS_URL
+        fromService: {type: keyvalue, name: dras-redis, property: connectionString}
+      - key: DRAS_SERVICE_TOKEN
+        generateValue: true
+      - key: DRAS_ASSESSOR_EMAILS
+        sync: false
+      - key: DRAS_OPENAI_API_KEY
+        sync: false
+      - key: DRAS_REQUIRE_MALWARE_SCAN
+        value: "true"
+      - key: DRAS_REQUIRE_PDF_RENDER
+        value: "true"
+      - key: DRAS_S3_BUCKET
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+  - type: worker
+    name: dras-worker
+    runtime: docker
+    dockerCommand: celery -A dras.worker.celery_app worker --loglevel=INFO --concurrency=1
+    envVars:
+      - key: DRAS_ENV
+        value: production
+      - key: DRAS_DATABASE_URL
+        fromDatabase: {name: dras-postgres, property: connectionString}
+      - key: DRAS_REDIS_URL
+        fromService: {type: keyvalue, name: dras-redis, property: connectionString}
+      - key: DRAS_OPENAI_API_KEY
+        sync: false
+      - key: DRAS_S3_BUCKET
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+  - type: keyvalue
+    name: dras-redis
+    plan: 256mb
+    ipAllowList: []
+    maxmemoryPolicy: noeviction
+databases:
+  - name: dras-postgres
+    databaseName: dras
+    user: dras
+    postgresMajorVersion: "17"
+    ipAllowList: []
+

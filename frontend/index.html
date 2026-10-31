@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DRAS — Dissertation review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400;1,6..72,500&family=Schibsted+Grotesk:wght@400;500;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="bar">
+  <a class="mark" href="#" aria-label="DRAS home">DRAS<i></i></a>
+  <button id="backBtn" class="ghost back" hidden>← All dissertations</button>
+  <span id="fileName" class="file" hidden></span>
+  <span id="saveState" class="save-state" hidden></span>
+</header>
+
+<!-- 1 · home: upload and the list of dissertations -->
+<main id="intake" class="intake">
+  <section class="pitch" id="pitch">
+    <h1>Read it once.<br>Mark it <em>properly</em>.</h1>
+    <p>Upload dissertations, one or fifty. The AI drafts each assessment. You open each one, check every comment against the text, change what you disagree with, then confirm.</p>
+    <dl class="outputs">
+      <div><dt>Assessment report</dt><dd>Checklist and section comments, in the WAPCP format.</dd></div>
+      <div class="red"><dt>Confidential scoring</dt><dd>Scores out of 60. Never shared with the student.</dd></div>
+    </dl>
+  </section>
+
+  <section class="ledger" id="ledger" aria-label="Dissertations" hidden>
+    <div class="ledger-head">
+      <h2>Dissertations</h2>
+      <span id="ledgerCount" class="ledger-count"></span>
+    </div>
+    <ul id="ledgerRows" class="rows"></ul>
+  </section>
+
+  <section class="sheet" id="drop" tabindex="0" role="button" aria-label="Choose dissertations to upload">
+    <input id="picker" type="file" accept=".pdf,.doc,.docx" multiple hidden>
+    <div id="dropIdle">
+      <span class="sheet-title">Drop dissertations here</span>
+      <span class="sheet-sub">or <u>choose files</u> · PDF, DOC or DOCX · as many as you like</span>
+    </div>
+    <div id="dropBusy" hidden>
+      <span class="sheet-title">Uploading…</span>
+      <span class="sweep"></span>
+    </div>
+    <p id="error" class="error" role="alert" hidden></p>
+  </section>
+</main>
+
+<!-- 2 · review -->
+<div id="review" class="review" hidden>
+  <section class="doc-pane" aria-label="Dissertation">
+    <p id="docBanner" class="doc-banner"></p>
+    <div id="docScroll" class="doc-scroll">
+      <div id="pdfPages" hidden></div>
+      <div id="htmlHost" hidden></div>
+    </div>
+    <p id="docNote" class="doc-note" hidden></p>
+  </section>
+
+  <div id="splitter" class="splitter" role="separator" aria-orientation="vertical" tabindex="0" aria-label="Resize panels"></div>
+
+  <section class="feedback" aria-label="Feedback">
+    <div class="who">
+      <label>Candidate<input data-meta="candidate_name"></label>
+      <label>Registration no.<input data-meta="registration_number"></label>
+      <label class="wide">Title<input data-meta="title"></label>
+      <label class="wide">Supervisor<input data-meta="supervisor"></label>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-assessment" aria-selected="true" aria-controls="pane-assessment">Assessment report</button>
+      <button role="tab" id="tab-confidential" aria-selected="false" aria-controls="pane-confidential" class="red">Confidential scoring</button>
+    </div>
+
+    <div class="panes">
+      <div role="tabpanel" id="pane-assessment" class="pane" aria-labelledby="tab-assessment"></div>
+      <div role="tabpanel" id="pane-confidential" class="pane red" aria-labelledby="tab-confidential" hidden></div>
+    </div>
+
+    <footer class="dock">
+      <div class="dock-total"><span>Total score</span><b id="total">0</b><small>/ 60</small></div>
+      <div class="dock-actions" id="dockActions"></div>
+    </footer>
+  </section>
+</div>
+
+<svg id="ink" class="ink" aria-hidden="true"><path id="inkPath"/><circle id="inkDot" r="4"/></svg>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
