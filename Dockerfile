@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
-RUN useradd -m -u 1000 user
+# Create the app folder as the user: older Docker builders make WORKDIR root-owned, and uv then cannot write to it.
+RUN useradd -m -u 1000 user && mkdir -p /home/user/app && chown user:user /home/user/app
 USER user
 # DRAS_WORKERS=1: three LibreOffice conversions at once do not fit in 512 MB; raise it on a bigger machine.
 ENV HOME=/home/user DRAS_DATA=/home/user/data DRAS_WORKERS=1 UV_COMPILE_BYTECODE=1
