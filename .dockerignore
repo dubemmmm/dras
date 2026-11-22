@@ -1,0 +1,7 @@
+*
+!pyproject.toml
+!uv.lock
+!grader.py
+!reports.py
+!server.py
+!frontend/

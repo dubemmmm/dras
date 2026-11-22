@@ -1,6 +1,7 @@
 """Read a dissertation, send it to an LLM once, get back a structured grade."""
 
 import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -144,14 +145,31 @@ def extract_text(filename: str, data: bytes) -> str:
             for table in doc.tables:
                 parts += [" | ".join(c.text for c in row.cells) for row in table.rows]
             return "\n".join(parts)
-        if suffix == ".doc":  # macOS built-in converter
-            result = subprocess.run(
-                ["textutil", "-convert", "txt", "-stdout", str(path)],
-                capture_output=True, text=True, check=False,
-            )
-            if result.returncode:
-                raise ValueError("Could not read this .doc file. Save it as .docx or PDF and retry.")
-            return result.stdout
+        if suffix == ".doc":
+            unreadable = ValueError("Could not read this .doc file. Save it as .docx or PDF and retry.")
+            if shutil.which("textutil"):  # macOS built-in converter
+                result = subprocess.run(
+                    ["textutil", "-convert", "txt", "-stdout", str(path)],
+                    capture_output=True, text=True, check=False,
+                )
+                if result.returncode:
+                    raise unreadable
+                return result.stdout
+            soffice = shutil.which("soffice")  # Linux servers: LibreOffice
+            if not soffice:
+                raise unreadable
+            try:
+                subprocess.run(
+                    [soffice, f"-env:UserInstallation=file://{tmp}/profile", "--headless",
+                     "--convert-to", "txt:Text (encoded):UTF8", "--outdir", tmp, str(path)],
+                    capture_output=True, timeout=180, check=False,
+                )
+            except subprocess.TimeoutExpired:
+                raise unreadable from None
+            out = Path(tmp) / "source.txt"
+            if not out.exists():
+                raise unreadable
+            return out.read_text(encoding="utf-8", errors="replace")
     raise ValueError("Upload a PDF, DOCX or DOC file.")
 
 

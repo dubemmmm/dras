@@ -6,9 +6,11 @@ Every upload is a job saved under data/jobs/<id>/ (source file, page-view PDF, j
 work and the assessor's edits survive a refresh or a restart.
 """
 
+import base64
 import json
 import os
 import re
+import secrets
 import shutil
 import subprocess
 import tempfile
@@ -21,7 +23,7 @@ from time import time
 
 import mammoth
 import pymupdf
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -35,8 +37,31 @@ WORKERS = int(os.getenv("DRAS_WORKERS", "3"))  # dissertations graded at the sam
 FRONTEND = Path(__file__).parent / "frontend"
 JOBS_DIR = Path(os.getenv("DRAS_DATA", Path(__file__).parent / "data")) / "jobs"
 
+PASSWORD = os.getenv("DRAS_PASSWORD", "")
+if not PASSWORD and (os.getenv("RENDER") or os.getenv("SPACE_ID")):  # hosted: on the open internet
+    raise RuntimeError("Set the DRAS_PASSWORD environment variable on the host before starting.")
+
 app = FastAPI(title="DRAS")
-pool = ThreadPoolExecutor(max_workers=WORKERS)
+
+
+@app.middleware("http")
+async def require_password(request: Request, call_next):
+    """One shared password (any username) in front of every page and API call. Off when unset, for local use."""
+    if PASSWORD:
+        given = ""
+        scheme, _, value = request.headers.get("Authorization", "").partition(" ")
+        if scheme.lower() == "basic":
+            try:
+                given = base64.b64decode(value).decode().partition(":")[2]
+            except ValueError:
+                pass
+        if not secrets.compare_digest(given.encode(), PASSWORD.encode()):
+            return Response("Password required.", status_code=401,
+                            headers={"WWW-Authenticate": 'Basic realm="DRAS", charset="UTF-8"'})
+    return await call_next(request)
+
+
+pool =ThreadPoolExecutor(max_workers=WORKERS)
 jobs: dict[str, dict] = {}
 write_lock = threading.Lock()
 
@@ -262,6 +287,8 @@ def as_html(job_id: str) -> Response:
     src = source_of(job_id)
     if src.suffix == ".docx":
         html = mammoth.convert_to_html(BytesIO(src.read_bytes())).value
+    elif not shutil.which("textutil"):  # not on macOS; servers show the LibreOffice page view instead
+        html = ""
     else:  # .doc: the macOS converter keeps tables
         html = subprocess.run(["textutil", "-convert", "html", "-stdout", str(src)],
                               capture_output=True, text=True, check=False).stdout

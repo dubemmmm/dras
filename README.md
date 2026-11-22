@@ -16,6 +16,20 @@ uv run uvicorn server:app --port 8502
 
 Open http://localhost:8502.
 
+## Deploy (Render, free tier)
+
+Push this repo to GitHub, then on Render create a **Web Service** from it (language **Docker**, instance type **Free**)
+with two environment variables:
+
+| Variable | Value |
+|---|---|
+| `DRAS_OPENAI_API_KEY` | your OpenAI key |
+| `DRAS_PASSWORD` | the shared password assessors type to get in (any username) |
+
+The app refuses to start there without `DRAS_PASSWORD`. It grades one dissertation at a time (`DRAS_WORKERS=1`, set in
+the Dockerfile) because the free instance has 512 MB of RAM. Nothing is kept across a restart (redeploy, or sleep after
+~15 min idle): download reports before leaving a batch. Word files are paged by LibreOffice, and `.doc` text is read with it too.
+
 ## Layout
 
 | File | Job |
